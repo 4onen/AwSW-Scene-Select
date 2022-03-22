@@ -18,8 +18,6 @@ init:
                 if self.locked:
                     return
 
-                print("Beginning fss.Replay")
-
                 if renpy.config.enter_replay_transition:
                     renpy.transition(renpy.config.enter_replay_transition)
 
