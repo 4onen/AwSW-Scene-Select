@@ -7,6 +7,9 @@ import four_scene_select as fss
 import renpy
 from renpy import store
 
+def block_replay_over_mod_chapter_boundaries():
+    fss.end_replay_at_ml_node(ml.find_label('_mod_fixjmp'))
+
 def link_minigames():
     fss.register_scene_select_cateogry("Minigames")
 
@@ -77,6 +80,8 @@ class MyAwSWMod(Mod):
                 ])
             .compile_to("main_menu")
         )
+
+        block_replay_over_mod_chapter_boundaries()
 
         link_minigames()
         # link_endings()
