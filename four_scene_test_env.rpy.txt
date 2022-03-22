@@ -1,0 +1,17 @@
+
+default my_alphabet_soup = 31
+
+label four_scene_runtime_test_env:
+label four_scene_test_env:
+    s "Startup save point."
+    python:
+        print(list(renpy.python.store_dicts.keys()))
+        my_alphabet_soup += 1
+        print('Start my_alphabet_soup', my_alphabet_soup)
+    s "Test 1 passed?"
+    $ renpy.end_replay()
+    s "Replay has ended. Save now for phase 2."
+    python:
+        my_alphabet_soup += 1
+        print('Saved my_alphabet_soup', my_alphabet_soup)
+    s "Test 2 passed?"

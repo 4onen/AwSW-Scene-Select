@@ -10,6 +10,16 @@ from renpy import store
 def block_replay_over_mod_chapter_boundaries():
     fss.end_replay_at_ml_node(ml.find_label('_mod_fixjmp'))
 
+def link_test_environment():
+    if renpy.exports.has_label('four_scene_test_env'):
+        fss.register_scene_select_cateogry("TEST")
+        fss.register_scene_select("TEST", "Test Environment", 'four_scene_test_env', locked=False)
+
+    if renpy.exports.has_label('four_scene_runtime_test_env'):
+        ( ml.find_label('seccont')
+            .hook_to('four_scene_runtime_test_env', return_link=False)
+        )
+
 def link_minigames():
     fss.register_scene_select_cateogry("Minigames")
 
@@ -82,6 +92,8 @@ class MyAwSWMod(Mod):
         )
 
         block_replay_over_mod_chapter_boundaries()
+
+        link_test_environment()
 
         link_minigames()
         # link_endings()

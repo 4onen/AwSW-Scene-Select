@@ -12,6 +12,9 @@ default_replay_scope = {
 def extend_scope(**kwargs):
     return dict(default_replay_scope, **kwargs)
 
+def extend_scope_by_dict(d):
+    return dict(default_replay_scope, **d)
+
 class Scene(object):
     def __init__(self, name, label, replay_scope = default_replay_scope, locked=None):
         self.name = name
@@ -24,9 +27,6 @@ class Scene(object):
 
     def __str__(self):
         return self.name
-
-    def get_replay(self):
-        return store.Replay(self.label, self.replay_scope, locked=self.get_locked())
 
     def get_locked(self):
         if callable(self._locked):

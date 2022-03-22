@@ -1,6 +1,7 @@
 init:
     python in four_scene_select:
         from four_scene_select import _scene_select_db, _nsfw_categories, default_replay_scope
+        from four_scene_select.replay import call_replay
 
         _scene_category_selected = None
 
@@ -10,6 +11,22 @@ init:
                 return list(_scene_select_db.keys())
             else:
                 return [ k for k in _scene_select_db.keys() if k not in _nsfw_categories]
+
+        @renpy.pure
+        class Replay(renpy.store.Replay):
+            def __call__(self):
+                if self.locked:
+                    return
+
+                print("Beginning fss.Replay")
+
+                if renpy.config.enter_replay_transition:
+                    renpy.transition(renpy.config.enter_replay_transition)
+
+                call_replay(self.label, self.scope)
+
+                if renpy.config.exit_replay_transition:
+                    renpy.transition(renpy.config.exit_replay_transition)
 
     python:
         style.foursceneselectmenubutton = Style(style.menubutton)
@@ -58,7 +75,7 @@ init:
                 for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []):
                     textbutton str(sceneobj):
                         action [Play("audio","se/sounds/new.ogg"),
-                                sceneobj.get_replay(),
+                                four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked()),
                         ]
                         hovered Play("audio","se/sounds/select.ogg")
                         style "foursceneselectmenubutton"
