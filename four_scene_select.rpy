@@ -1,6 +1,6 @@
 init:
     python in four_scene_select:
-        from four_scene_select import _scene_select_db, _nsfw_categories, default_replay_scope
+        from four_scene_select import _scene_select_db, _nsfw_categories
         from four_scene_select.replay import call_replay
 
         _scene_category_selected = None
@@ -48,8 +48,16 @@ init:
             alpha 1.0
 
 
+    define four_scene_select_hover_sound = Play("audio", "se/sounds/select.ogg")
 
-    screen four_scene_select tag gallery_page:
+    python:
+        renpy.const('four_scene_select._scene_select_db')
+        renpy.const('four_scene_select._nsfw_categories')
+        renpy.const('four_scene_select_category_button')
+
+
+    screen four_scene_select():
+        tag gallery_page
         hbox:
             xalign 0.5
             yanchor 0.0
@@ -57,9 +65,9 @@ init:
             spacing 40
 
             for category in four_scene_select.get_categories():
-                textbutton str(category):
-                    action [SetField(four_scene_select,'_scene_category_selected',category), Play("audio","se/sounds/select.ogg")]
-                    hovered Play("audio", "se/sounds/select.ogg")
+                textbutton "[category]":
+                    action [SetField(four_scene_select,'_scene_category_selected',category), Play("audio", "se/sounds/select.ogg")]
+                    hovered four_scene_select_hover_sound
                     style "menubutton"
                     at four_scene_select_category_button
 
@@ -71,17 +79,17 @@ init:
                 spacing 10
 
                 for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []):
-                    textbutton str(sceneobj):
+                    textbutton "[sceneobj]":
                         action [Play("audio","se/sounds/new.ogg"),
                                 four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked()),
                         ]
-                        hovered Play("audio","se/sounds/select.ogg")
+                        hovered four_scene_select_hover_sound
                         style "foursceneselectmenubutton"
                         at four_scene_select_category_button
 
 
 
-    screen four_replay_navigation:
+    screen four_replay_navigation():
         tag menu
         frame:
             add "image/ui/ingame_menu_bg2.png" at alpha_dissolve
@@ -93,10 +101,10 @@ init:
                 yalign 0.13
                 spacing 55
 
-                imagebutton idle "image/ui/back_title.png" hover "image/ui/back_title.png" action [Return(), Play("audio", "se/sounds/close.ogg")] hovered Play("audio", "se/sounds/select.ogg") at navmenu_button_mid
+                imagebutton idle "image/ui/back_title.png" hover "image/ui/back_title.png" action [Return(), Play("audio", "se/sounds/close.ogg")] hovered four_scene_select_hover_sound at navmenu_button_mid
 
                 vbox:
                     null height 7
-                    imagebutton idle "image/ui/settings_title.png" hover "image/ui/settings_title.png" action [Show('preferences_nav'), Hide('load_nav'), Hide('save_nav'), Hide('videosettings_nav'), Hide('audiosettings_nav'), Hide('textsettings_nav'), Hide('achievements'), Hide('achievement_page'), Hide('status'), Play("audio", "se/sounds/open.ogg")] hovered Play("audio", "se/sounds/select.ogg") at navmenu_button_center
+                    imagebutton idle "image/ui/settings_title.png" hover "image/ui/settings_title.png" action [Show('preferences_nav'), Hide('load_nav'), Hide('save_nav'), Hide('videosettings_nav'), Hide('audiosettings_nav'), Hide('textsettings_nav'), Hide('achievements'), Hide('achievement_page'), Hide('status'), Play("audio", "se/sounds/open.ogg")] hovered four_scene_select_hover_sound at navmenu_button_center
 
-                imagebutton idle "image/ui/quit_title.png" hover "image/ui/quit_title.png" action [MainMenu(), Play("audio", "se/sounds/alert.ogg")] hovered Play("audio", "se/sounds/select.ogg") at navmenu_button_mid
+                imagebutton idle "image/ui/quit_title.png" hover "image/ui/quit_title.png" action [MainMenu(), Play("audio", "se/sounds/alert.ogg")] hovered four_scene_select_hover_sound at navmenu_button_mid
