@@ -31,6 +31,8 @@ class Scene(object):
     def get_locked(self):
         if callable(self._locked):
             return self._locked()
+        elif self._locked is None:
+            return False
         else:
             return self._locked
 
