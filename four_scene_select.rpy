@@ -50,6 +50,10 @@ init:
 
     define four_scene_select_hover_sound = Play("audio", "se/sounds/select.ogg")
 
+    style four_scene_select_hover_sound_sty is image_button:
+        activate_sound "se/sounds/yes.wav"
+        hover_sound "se/sounds/select.ogg"
+
     python:
         renpy.const('four_scene_select._scene_select_db')
         renpy.const('four_scene_select._nsfw_categories')
@@ -58,6 +62,21 @@ init:
 
     screen four_scene_select():
         tag gallery_page
+
+        hbox:
+            xalign 0.2
+            yalign 0.02
+            spacing 10
+            imagebutton:
+                idle im.Scale("ui/nsfw_chbox-unchecked.png", 55, 55)
+                hover im.Recolor(im.Scale("ui/nsfw_chbox-unchecked.png", 55, 55), 64, 64, 64)
+                selected_idle im.Scale("ui/nsfw_chbox-checked.png", 55, 55)
+                selected_hover im.Recolor(im.Scale("ui/nsfw_chbox-checked.png", 55, 55), 64, 64, 64)
+                action MTSTogglePersistentBool('four_scene_select_unlockall')
+                style "four_scene_select_hover_sound_sty"
+                focus_mask None
+            text _("(Crash Risky) Open All")
+
         hbox:
             xalign 0.5
             yanchor 0.0
@@ -81,7 +100,7 @@ init:
                 for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []):
                     textbutton "[sceneobj]":
                         action [Play("audio","se/sounds/new.ogg"),
-                                four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked()),
+                                four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked() and not persistent.four_scene_select_unlockall),
                         ]
                         hovered four_scene_select_hover_sound
                         style "foursceneselectmenubutton"
