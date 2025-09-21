@@ -89,7 +89,7 @@ init:
                 action MTSTogglePersistentBool('four_scene_select_unlockall')
                 style "four_scene_select_hover_sound_sty"
                 focus_mask None
-            text _("(Crash Risky) Open All")
+            text _("(Crash Risky) Enable All")
 
         hbox:
             xalign 0.5
