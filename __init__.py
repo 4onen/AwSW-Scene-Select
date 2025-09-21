@@ -1,16 +1,15 @@
 from modloader.modclass import Mod, loadable_mod
 from modloader.modinfo import has_mod
-import jz_magmalink as ml
 
 import four_scene_select as fss
 
 import renpy
 from renpy import store
 
-def block_replay_over_mod_chapter_boundaries():
+def block_replay_over_mod_chapter_boundaries(ml):
     fss.end_replay_at_ml_node(ml.find_label('_mod_fixjmp'))
 
-def link_test_environment():
+def link_test_environment(ml):
     if renpy.exports.has_label('four_scene_test_env'):
         fss.register_scene_select_cateogry("TEST")
         fss.register_scene_select("TEST", "Test Environment", 'four_scene_test_env', locked=False)
@@ -20,15 +19,15 @@ def link_test_environment():
             .hook_to('four_scene_runtime_test_env', return_link=False)
         )
 
-def link_minigames():
+def link_minigames(ml):
     fss.register_scene_select_cateogry("Minigames")
 
-    def link_sebastian_cards():
+    def link_sebastian_cards(ml):
         fss.register_scene_select("Minigames", "Sebastian cards", 'gamestart')
         fss.end_replay_at_ml_node(ml.find_label('sebastianskip'))
-    link_sebastian_cards()
+    link_sebastian_cards(ml)
 
-    def link_bryce_drinking_game():
+    def link_bryce_drinking_game(ml):
         startpoint =( ml.find_label('_call_skiptut_8')
             .search_say("(Considering they don't even have cars, at least I won't have to worry about drinking and driving.)")
         )
@@ -40,10 +39,10 @@ def link_minigames():
         fss.register_scene_select("Minigames", "Bryce drinking game", 'four_scene_select_minigame_bryce1_drinking',replay_scope=context, locked=False)
         fss.end_replay_at_ml_node(startpoint.search_menu("[[Give up.]").branch().search_python('nodrinks = True'))
         fss.end_replay_at_ml_node(startpoint.search_menu("I know when I've had enough, and it's now.", depth=400).search_show('bryce normal').search_with())
-    link_bryce_drinking_game()
+    link_bryce_drinking_game(ml)
 
 
-def link_endings():
+def link_endings(ml):
     # Endings are too complicated for the replay system I've setup here to handle. Toy with this at your own risk.
     fss.register_scene_select_cateogry("Endings")
 
@@ -53,7 +52,7 @@ def link_endings():
     fss.register_scene_select("Endings", "Bryce Romance Good", 'bryce5', replay_scope=fss.extend_scope(brycestatus='good',sebastiansaved=False, brycegoodending=True), locked=lambda: not (store.persistent.brycegoodending and renpy.exports.seen_image('brycerom')))
 
 
-def link_eck_minigames():
+def link_eck_minigames(ml):
     if has_mod('Savior'):# or has_mod('A Solitary Mind'):# or has_mod('Not-so-Tragic Hero'):
         fss.register_scene_select_cateogry("ECK Minigames")
 
@@ -81,6 +80,7 @@ class MyAwSWMod(Mod):
 
     @staticmethod
     def mod_load():
+        import jz_magmalink as ml
         ( ml.Overlay()
             .add(['textbutton "scenes":'\
                  ,'    xalign 0.655'\
@@ -91,13 +91,13 @@ class MyAwSWMod(Mod):
             .compile_to("main_menu")
         )
 
-        block_replay_over_mod_chapter_boundaries()
+        block_replay_over_mod_chapter_boundaries(ml)
 
-        link_test_environment()
+        link_test_environment(ml)
 
-        link_minigames()
-        # link_endings()
-        link_eck_minigames()
+        link_minigames(ml)
+        # link_endings(ml)
+        link_eck_minigames(ml)
 
     @staticmethod
     def mod_complete():

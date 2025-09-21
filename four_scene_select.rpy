@@ -13,7 +13,6 @@ init:
             scenes_per_page = 2*_scenes_per_column
             pages_per_data = 1+len(arr)/scenes_per_page
             res = scenes_per_page*(page % pages_per_data)
-            print("PaGe ", page, " start ", res)
             return res
 
 
