@@ -4,6 +4,18 @@ init:
         from four_scene_select.replay import call_replay
 
         _scene_category_selected = None
+        _page = 0
+
+        _scenes_per_column = 9
+
+        @renpy.pure
+        def page_start(page, arr):
+            scenes_per_page = 2*_scenes_per_column
+            pages_per_data = 1+len(arr)/scenes_per_page
+            res = scenes_per_page*(page % pages_per_data)
+            print("PaGe ", page, " start ", res)
+            return res
+
 
         @renpy.pure
         def get_categories():
@@ -57,6 +69,7 @@ init:
     python:
         renpy.const('four_scene_select._scene_select_db')
         renpy.const('four_scene_select._nsfw_categories')
+        renpy.const('four_scene_select._scenes_per_column')
         renpy.const('four_scene_select_category_button')
 
 
@@ -64,8 +77,9 @@ init:
         tag gallery_page
 
         hbox:
-            xalign 0.2
-            yalign 0.02
+            xalign 0.5
+            yanchor 0.0
+            ypos 0.82
             spacing 10
             imagebutton:
                 idle im.Scale("ui/nsfw_chbox-unchecked.png", 55, 55)
@@ -85,26 +99,72 @@ init:
 
             for category in four_scene_select.get_categories():
                 textbutton "[category]":
-                    action [SetField(four_scene_select,'_scene_category_selected',category), Play("audio", "se/sounds/select.ogg")]
+                    action [SetField(four_scene_select,'_scene_category_selected',category), SetField(four_scene_select,'_page',0), Play("audio", "se/sounds/select.ogg")]
                     hovered four_scene_select_hover_sound
                     style "menubutton"
                     at four_scene_select_category_button
 
         if four_scene_select._scene_category_selected:
-            vbox:
-                xalign 0.5
-                yanchor 0.0
-                ypos 0.25
-                spacing 10
+            if len(four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, [])) <= four_scene_select._scenes_per_column:
+                vbox:
+                    xalign 0.5
+                    yanchor 0.0
+                    ypos 0.2
+                    spacing 10
 
-                for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []):
-                    textbutton "[sceneobj]":
-                        action [Play("audio","se/sounds/new.ogg"),
-                                four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked() and not persistent.four_scene_select_unlockall),
-                        ]
-                        hovered four_scene_select_hover_sound
-                        style "foursceneselectmenubutton"
-                        at four_scene_select_category_button
+                    for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []):
+                        textbutton "[sceneobj]":
+                            action [Play("audio","se/sounds/new.ogg"),
+                                    four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked() and not persistent.four_scene_select_unlockall),
+                            ]
+                            hovered four_scene_select_hover_sound
+                            style "foursceneselectmenubutton"
+                            at four_scene_select_category_button
+            else:
+                textbutton "<< Prev":
+                    xalign 0.25
+                    yanchor 0.0
+                    ypos 0.85
+                    action [SetField(four_scene_select,'_page',four_scene_select._page - 1), Play("audio", "se/sounds/select.ogg")]
+                    hovered four_scene_select_hover_sound
+                    style "menubutton"
+                    at four_scene_select_category_button
+                textbutton "Next >>":
+                    xalign 0.75
+                    yanchor 0.0
+                    ypos 0.85
+                    action [SetField(four_scene_select,'_page',four_scene_select._page + 1), Play("audio", "se/sounds/select.ogg")]
+                    hovered four_scene_select_hover_sound
+                    style "menubutton"
+                    at four_scene_select_category_button
+                vbox:
+                    xalign 0.24
+                    yanchor 0.0
+                    ypos 0.2
+                    spacing 10
+
+                    for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, [])[four_scene_select.page_start(four_scene_select._page, four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, [])):four_scene_select._scenes_per_column + four_scene_select.page_start(four_scene_select._page, four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []))]:
+                        textbutton "[sceneobj]":
+                            action [Play("audio","se/sounds/new.ogg"),
+                                    four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked() and not persistent.four_scene_select_unlockall),
+                            ]
+                            hovered four_scene_select_hover_sound
+                            style "foursceneselectmenubutton"
+                            at four_scene_select_category_button
+                vbox:
+                    xalign 0.76
+                    yanchor 0.0
+                    ypos 0.2
+                    spacing 10
+
+                    for sceneobj in four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, [])[four_scene_select._scenes_per_column + four_scene_select.page_start(four_scene_select._page, four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, [])):2*four_scene_select._scenes_per_column + four_scene_select.page_start(four_scene_select._page, four_scene_select._scene_select_db.get(four_scene_select._scene_category_selected, []))]:
+                        textbutton "[sceneobj]":
+                            action [Play("audio","se/sounds/new.ogg"),
+                                    four_scene_select.Replay(sceneobj.label, sceneobj.replay_scope, locked=sceneobj.get_locked() and not persistent.four_scene_select_unlockall),
+                            ]
+                            hovered four_scene_select_hover_sound
+                            style "foursceneselectmenubutton"
+                            at four_scene_select_category_button
 
 
 
