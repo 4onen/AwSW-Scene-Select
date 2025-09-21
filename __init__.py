@@ -72,7 +72,7 @@ def link_eck_minigames(ml,fss):
 @loadable_mod
 class MyAwSWMod(Mod):
     name = "Scene Select"
-    version = "v0.2"
+    version = "v0.3"
     author = "4onen"
     dependencies = ["MagmaLink"]
 
