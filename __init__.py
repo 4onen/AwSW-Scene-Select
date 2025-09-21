@@ -82,9 +82,9 @@ class MyAwSWMod(Mod):
         import four_scene_select as fss
 
         ( ml.Overlay()
-            .add(['textbutton "scenes":'\
-                 ,'    xalign 0.655'\
-                 ,'    yalign 0.7'\
+            .add(['imagebutton auto "image/ui/four_scene_select_scenesbutton_%s.png":'\
+                 ,'    xalign 0.345'\
+                 ,'    yalign 0.965'\
                  ,'    action [Show("gallery", transition=dissolve), SetField(four_scene_select,"_scene_category_selected",None), Show("four_scene_select"), Play("audio", "se/sounds/open.ogg")]'\
                  ,'    hovered Play("audio", "se/sounds/select.ogg")'\
                 ])
